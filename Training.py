@@ -18,6 +18,7 @@ import torch.backends.cudnn as cudn
 import pytorch_msssim
 from ConvLSTM import ConvLSTM
 import torchvision.utils as vutils
+from torchsummary import summary
 
 from VRNN import VRNN
 from Training_Dataset import TrainingDataset
@@ -25,13 +26,6 @@ from GDL import GDL
 from loss_function import loss_function
 from roll_axis import roll_axis
 from Load_Data import load_in_images
-
-# Load Dataset
-print('System Arguements: ', sys.argv)
-if (len(sys.argv) > 1):
-    overall_images = load_in_images(sys.argv[1])
-else:
-    overall_images = load_in_images()
 
 # Model Training
 torch.manual_seed(1)
@@ -43,6 +37,13 @@ model=VRNN(input_size=(16, 16),
                  kernel_size=(3, 3),
                  num_layers=5)
 model.cuda()
+
+# Load Dataset
+print('System Arguements: ', sys.argv)
+if (len(sys.argv) > 1):
+    overall_images = load_in_images(sys.argv[1])
+else:
+    overall_images = load_in_images()
 
 # Define Transforms
 tf = transforms.Compose([transforms.Resize((256,256)),transforms.ToTensor()])
@@ -80,5 +81,3 @@ for eidx, epoch in enumerate(range(num_epochs)):
     if not os.path.exists('./models'):
     	os.makedirs('./models')
     torch.save(model.state_dict(), './models/{}_model-ped.pt'.format(eidx + 1))
-
-
